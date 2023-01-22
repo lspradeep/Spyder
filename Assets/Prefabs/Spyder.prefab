@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 213228663096654446}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: WebShootPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -46,9 +46,9 @@ GameObject:
   - component: {fileID: 213228663321794664}
   - component: {fileID: 213228663321794667}
   - component: {fileID: 213228663321794665}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Spyder
-  m_TagString: Untagged
+  m_TagString: Spyder
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -244,7 +244,7 @@ GameObject:
   m_Component:
   - component: {fileID: 213228663341580118}
   - component: {fileID: 213228663341580119}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Legs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
