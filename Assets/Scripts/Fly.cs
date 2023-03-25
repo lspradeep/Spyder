@@ -5,45 +5,78 @@ using UnityEngine;
 public class Fly : MonoBehaviour
 {
     private Rigidbody2D rb;
-    private Transform path;
-    private List<Vector3> points = new List<Vector3>();
     private int index = 0;
     private int count = 0;
+    private int selfDestructTimeInSec = 60;
+    [HideInInspector] public PathConfig pathConfig;
+    private bool hitByEnemy = false;
     private FlySpawner flySpawner;
+    private int speed = 1;
+
 
     private void Awake()
     {
         flySpawner = FindObjectOfType<FlySpawner>();
     }
 
+
     void Start()
     {
-        path = flySpawner.GetAPath();
+        count = pathConfig.getPathLenght();
         rb = GetComponent<Rigidbody2D>();
-        foreach (Transform t in path)
-        {
-            points.Add(t.position);
-        }
-        count = points.Count;
-        gameObject.transform.position = points[index];
+        transform.position = pathConfig.getStartingPoint().position;
+        StartCoroutine(SelfDestruct());
+        print(pathConfig.name + " " + pathConfig.getPoints().Count);
     }
 
     private void StartMoving()
     {
-        transform.position = Vector2.MoveTowards(transform.position, points[index], 1f * Time.deltaTime);
-        if (transform.position == points[index] && index < count - 1)
+        if (index < count)
+        {
+            speed = flySpawner.getRandomSpeed();
+            transform.position = Vector2.MoveTowards(transform.position, pathConfig.getPointAt(index).position, speed * Time.deltaTime);
+            FlipCharcter();
+        }
+
+        if (index < count && transform.position == pathConfig.getPointAt(index).position)
         {
             index++;
+            print("@@@ if " + index);
         }
-        else if (index == count - 1)
+        else if (index == count)
         {
             index = 0;
+            print("@@@ else " + index);
         }
+    }
+
+
+    private void FlipCharcter()
+    {
+        if (transform.position.x < pathConfig.getPointAt(index).position.x)
+        {
+            GetComponent<SpriteRenderer>().flipX = false;
+        }
+        else
+        {
+            GetComponent<SpriteRenderer>().flipX = true;
+        }
+       
     }
 
     void Update()
     {
-        StartMoving();
+        if (!hitByEnemy)
+        {
+            StartMoving();
+        }
+        else
+        {
+            if (gameObject != null)
+            {
+                GetComponent<Animator>().enabled = false;
+            }
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -51,11 +84,22 @@ public class Fly : MonoBehaviour
         if (collision.tag.Equals("Web"))
         {
             rb.bodyType = RigidbodyType2D.Dynamic;
+            hitByEnemy = true;
         }
         else if (collision.tag.Equals("Spyder") || collision.tag.Equals("Ground"))
         {
+            hitByEnemy = true;
             Destroy(gameObject);
         }
     }
 
+
+    private IEnumerator SelfDestruct()
+    {
+        yield return new WaitForSeconds(selfDestructTimeInSec);
+        if (gameObject != null)
+        {
+            Destroy(gameObject);
+        }
+    }
 }

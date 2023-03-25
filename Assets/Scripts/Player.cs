@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
     [SerializeField] GameObject web;
     private bool startShooting = false;
     private Coroutine shootingCoroutine = null;
-
+    [SerializeField] int walkSpeed = 4;
 
     // Start is called before the first frame update
     void Start()
@@ -39,6 +39,10 @@ public class Player : MonoBehaviour
     {
         isPlayerFeetOnGround = legsCollider.IsTouchingLayers(LayerMask.GetMask(leftLaneMask, rightLaneMask));
         animator.SetBool(ANIM_JUMP, !isPlayerFeetOnGround);
+        //if (isPlayerFeetOnGround)
+        //{
+        //    rb.velocity = Vector2.up * walkSpeed * Time.deltaTime;
+        //}
     }
 
     void FixedUpdate()
@@ -74,17 +78,30 @@ public class Player : MonoBehaviour
     public void OnFire(InputValue inputValue)
     {
         startShooting = inputValue.isPressed;
-        if (startShooting && shootingCoroutine == null)
+        if (startShooting)
+        {
+            ShootWeb();
+        }
+        else
+        {
+            StopShootWeb();
+        }
+    }
+
+    private void ShootWeb()
+    {
+        if (shootingCoroutine == null)
         {
             shootingCoroutine = StartCoroutine(StartShoot());
         }
-        else if (!startShooting)
+    }
+
+    private void StopShootWeb()
+    {
+        if (shootingCoroutine != null)
         {
-            if (shootingCoroutine != null)
-            {
-                StopCoroutine(shootingCoroutine);
-                shootingCoroutine = null;
-            }
+            StopCoroutine(shootingCoroutine);
+            shootingCoroutine = null;
         }
     }
 
@@ -101,11 +118,11 @@ public class Player : MonoBehaviour
     {
         if (currentLane == rightLaneMask)
         {
-            gameObject.transform.eulerAngles = new Vector3(0, 180, 90);
+            transform.eulerAngles = new Vector3(0, 180, 90);
         }
         else if (currentLane == leftLaneMask)
         {
-            gameObject.transform.eulerAngles = new Vector3(0, 0, 90);
+            transform.eulerAngles = new Vector3(0, 0, 90);
         }
     }
 
